@@ -71,5 +71,21 @@
       return this[privateList](name).map(c => c.callback);
     }
   }
-  window.Emitter = SimpleEmitter;
+  class WatchEmitter extends SimpleEmitter {
+    watch(obj, property, name = property + '-changed') {
+      let val = obj[property];
+      Object.defineProperty(obj, property, {
+        get: () => {
+          return val;
+        },
+        set: v => {
+          if (v !== val) {
+            val = v;
+            this.emit(name, v);
+          }
+        }
+      });
+    }
+  }
+  window.Emitter = WatchEmitter;
 }
