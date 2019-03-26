@@ -26,7 +26,7 @@
     }
     [privateEmit](memory = false, name, ...vals) {
       const m = new WeakMap();
-      for (const obj of this[privateList](name)) {
+      for (const obj of [...this[privateList](name)]) {
         const bol = obj.if(...vals);
         let r;
         if (bol) {
@@ -73,6 +73,11 @@
   }
   class WatchEmitter extends SimpleEmitter {
     watch(obj, property, name = property + '-changed') {
+      if (typeof obj === 'string') {
+        name = property || obj + '-changed';
+        property = obj;
+        obj = this;
+      }
       let val = obj[property];
       Object.defineProperty(obj, property, {
         get: () => {
